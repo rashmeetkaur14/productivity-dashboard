@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - WToDo</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; background-color: var(--bg-base); margin: 0;
+            overflow: hidden; font-family: 'Inter', sans-serif; color: var(--text-primary);
+        }
+        .auth-container {
+            background: var(--bg-surface); padding: 3rem; border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl); border: 1px solid var(--border-color);
+            width: 100%; max-width: 420px; text-align: center;
+            position: relative; z-index: 10;
+        }
+        .auth-logo { font-size: 2.5rem; color: var(--accent-color); margin-bottom: 1rem; }
+        .auth-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .auth-subtitle { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 2rem; }
+        
+        .form-group { margin-bottom: 1.25rem; text-align: left; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); }
+        .form-input {
+            width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem;
+            background: var(--bg-base); color: var(--text-primary); transition: var(--transition);
+            box-sizing: border-box;
+        }
+        .form-input:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 3px var(--accent-light); }
+        
+        .auth-btn {
+            width: 100%; padding: 0.8rem; background: var(--accent-color); color: white;
+            border: none; border-radius: var(--radius-sm); font-size: 1rem; font-weight: 500;
+            cursor: pointer; transition: var(--transition); margin-top: 0.5rem;
+        }
+        .auth-btn:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        
+        .auth-switch { margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-secondary); }
+        .auth-switch a { color: var(--accent-color); font-weight: 600; cursor: pointer; text-decoration: none; }
+        .auth-switch a:hover { text-decoration: underline; }
+        
+        .error-msg {
+            background: var(--danger-bg); color: var(--danger); padding: 0.75rem;
+            border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 500;
+            margin-bottom: 1.5rem; display: none; text-align: left;
+        }
+        
+        .view-hidden { display: none !important; }
+        
+        /* Decorative Background */
+        .bg-shape { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 1; opacity: 0.5; }
+        .shape-1 { top: -10%; left: -10%; width: 400px; height: 400px; background: rgba(99, 102, 241, 0.4); }
+        .shape-2 { bottom: -10%; right: -10%; width: 300px; height: 300px; background: rgba(129, 140, 248, 0.3); }
+    </style>
+</head>
+<body class="light-theme">
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    
+    <div class="auth-container">
+        <i class="fas fa-layer-group auth-logo"></i>
+        
+        <!-- Login View -->
+        <div id="loginView">
+            <h1 class="auth-title">Welcome back</h1>
+            <p class="auth-subtitle">Enter your details to access your workspace.</p>
+            
+            <div class="error-msg" id="loginError"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" class="form-input" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="auth-btn">Log In</button>
+            </form>
+            
+            <div class="auth-switch">
+                Don't have an account? <a id="showSignup">Sign up</a>
+            </div>
+        </div>
+        
+        <!-- Signup View -->
+        <div id="signupView" class="view-hidden">
+            <h1 class="auth-title">Create an account</h1>
+            <p class="auth-subtitle">Start organizing your tasks today.</p>
+            
+            <div class="error-msg" id="signupError"></div>
+            
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupName">Username</label>
+                    <input type="text" id="signupName" class="form-input" placeholder="Alex Doe" required minlength="2">
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" class="form-input" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" class="form-input" placeholder="••••••••" required minlength="6">
+                </div>
+                <button type="submit" class="auth-btn">Sign Up</button>
+            </form>
+            
+            <div class="auth-switch">
+                Already have an account? <a id="showLogin">Log in</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Init theme
+        const theme = localStorage.getItem('theme') || 'light';
+        document.body.className = theme === 'dark' ? 'dark-theme' : 'light-theme';
+
+        const loginView = document.getElementById('loginView');
+        const signupView = document.getElementById('signupView');
+        
+        document.getElementById('showSignup').addEventListener('click', () => {
+            loginView.classList.add('view-hidden');
+            signupView.classList.remove('view-hidden');
+        });
+        
+        document.getElementById('showLogin').addEventListener('click', () => {
+            signupView.classList.add('view-hidden');
+            loginView.classList.remove('view-hidden');
+        });
+
+        const getUsers = () => JSON.parse(localStorage.getItem('users')) || [];
+        const saveUsers = (users) => localStorage.setItem('users', JSON.stringify(users));
+
+        const showError = (elementId, msg) => {
+            const el = document.getElementById(elementId);
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 4000);
+        };
+
+        document.getElementById('signupForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+
+            const users = getUsers();
+            if (users.find(u => u.email === email)) {
+                showError('signupError', 'Email is already registered. Please log in.');
+                return;
+            }
+
+            users.push({ name, email, password });
+            saveUsers(users);
+
+            // Auto-login
+            sessionStorage.setItem('authenticated', 'true');
+            sessionStorage.setItem('userEmail', email);
+            sessionStorage.setItem('userName', name);
+            window.location.href = 'index.html';
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            const users = getUsers();
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (!user) {
+                showError('loginError', 'Invalid email or password.');
+                return;
+            }
+
+            sessionStorage.setItem('authenticated', 'true');
+            sessionStorage.setItem('userEmail', user.email);
+            sessionStorage.setItem('userName', user.name);
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

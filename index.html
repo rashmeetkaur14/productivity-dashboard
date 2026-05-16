@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - WToDo</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="light-theme">
+    <div id="loader" class="loader-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- App Layout Container -->
+    <div class="app-layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <i class="fas fa-layer-group brand-icon"></i>
+                    <span>WToDo</span>
+                </div>
+                <button class="mobile-close" id="mobileCloseBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <span class="nav-section-title">Views</span>
+                    <a href="#" class="nav-item active" data-filter="all">
+                        <i class="fas fa-inbox"></i> Dashboard
+                    </a>
+                    <a href="#" class="nav-item" data-filter="active">
+                        <i class="fas fa-tasks"></i> Active Tasks
+                    </a>
+                    <a href="#" class="nav-item" data-filter="important">
+                        <i class="fas fa-star"></i> Important
+                    </a>
+                    <a href="#" class="nav-item" data-filter="completed">
+                        <i class="fas fa-check-circle"></i> Completed
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item" id="settingsBtn">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+                <a href="#" class="nav-item text-danger" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Sticky Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="mobile-toggle" id="mobileToggleBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <button id="headerThemeToggle" class="icon-btn" aria-label="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="user-profile" id="profileDropdownBtn" style="cursor: pointer; position: relative;">
+                        <div class="avatar">
+                            <span id="userInitial">U</span>
+                        </div>
+                        
+                        <!-- Profile Dropdown -->
+                        <div class="profile-dropdown hidden" id="profileDropdown">
+                            <div class="dropdown-header">
+                                <strong id="dropdownName">User</strong>
+                                <span id="dropdownEmail">user@example.com</span>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item" id="dropdownSettingsBtn">
+                                <i class="fas fa-cog"></i> Settings
+                            </button>
+                            <button class="dropdown-item text-danger" id="dropdownLogoutBtn">
+                                <i class="fas fa-sign-out-alt"></i> Log Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-scrollable">
+                <!-- ONBOARDING STATE -->
+                <div id="onboardingState" class="onboarding-container hidden">
+                    <div class="onboarding-illustration" style="text-align: center; margin-top: 2rem;">
+                        <i class="fas fa-rocket text-accent" style="font-size: 5rem; margin-bottom: 1.5rem; filter: drop-shadow(0 4px 6px rgba(99, 102, 241, 0.4));"></i>
+                        <h2 style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--text-primary);">Welcome to your workspace</h2>
+                        <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto 3rem; font-size: 1.1rem; line-height: 1.6;">Get started by adding your first task. Here are a few tips to maximize your productivity and stay organized.</p>
+                    </div>
+                    
+                    <div class="tips-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+                        <div class="tip-card" style="background: var(--bg-surface); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                            <div class="tip-icon" style="margin-bottom: 1rem; font-size: 1.5rem;"><i class="fas fa-star text-orange"></i></div>
+                            <h4>Mark Important</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem; line-height: 1.5;">Set a task to High Priority to have it highlighted in red and accessible from the Important view.</p>
+                        </div>
+                        <div class="tip-card" style="background: var(--bg-surface); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                            <div class="tip-icon" style="margin-bottom: 1rem; font-size: 1.5rem;"><i class="fas fa-arrows-alt text-blue"></i></div>
+                            <h4>Reorder Tasks</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem; line-height: 1.5;">Drag and drop tasks in the default dashboard view to organize them exactly how you want.</p>
+                        </div>
+                        <div class="tip-card" style="background: var(--bg-surface); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                            <div class="tip-icon" style="margin-bottom: 1rem; font-size: 1.5rem;"><i class="fas fa-chart-pie text-green"></i></div>
+                            <h4>Track Progress</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem; line-height: 1.5;">Watch your completion ring fill up as you check off tasks throughout the day.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button class="primary-btn" id="onboardingAddBtn" style="padding: 1rem 2.5rem; font-size: 1.1rem; border-radius: 50px; box-shadow: var(--shadow-lg);">
+                            <i class="fas fa-plus"></i> Create your first task
+                        </button>
+                    </div>
+                </div>
+
+                <div id="dashboardContent">
+                <!-- Greeting & Overview -->
+                <section class="overview-section" id="overviewSection">
+                    <div class="greeting">
+                        <h2 id="greetingText">Good morning!</h2>
+                        <p class="subtitle">Here's a summary of your tasks today.</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-blue"><i class="fas fa-list"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="statTotal">0</span>
+                                <span class="stat-label">Total Tasks</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-orange"><i class="fas fa-clock"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="statPending">0</span>
+                                <span class="stat-label">Pending</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-green"><i class="fas fa-check"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="statCompleted">0</span>
+                                <span class="stat-label">Completed</span>
+                            </div>
+                        </div>
+                        <!-- Progress Ring Card -->
+                        <div class="stat-card progress-card">
+                            <div class="progress-ring-container">
+                                <svg class="progress-ring" width="50" height="50">
+                                    <circle class="progress-ring-circle-bg" stroke-width="4" fill="transparent" r="21"
+                                        cx="25" cy="25" />
+                                    <circle class="progress-ring-circle" id="progressRing" stroke-width="4"
+                                        fill="transparent" r="21" cx="25" cy="25" />
+                                </svg>
+                                <span class="progress-text" id="progressText">0%</span>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Completion</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tasks Header -->
+                <div class="tasks-header">
+                    <h3 id="taskListTitle">Your Tasks</h3>
+                    <div class="actions-wrapper">
+                        <select id="sortSelect" class="text-btn outline-btn" aria-label="Sort Tasks">
+                            <option value="default">Default Sort</option>
+                            <option value="priority-desc">High Priority First</option>
+                            <option value="priority-asc">Low Priority First</option>
+                        </select>
+                        <button id="clearCompletedBtn" class="text-btn danger-btn">Clear Completed</button>
+                    </div>
+                </div>
+
+                <!-- Tasks Container -->
+                <div class="tasks-container">
+                    <div id="emptyState" class="empty-state hidden">
+                        <div class="empty-illustration">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <h3>All caught up!</h3>
+                        <p>You have no tasks here. Enjoy your day or add a new task.</p>
+                        <button class="primary-btn mt-3" id="emptyAddBtn">Add Task</button>
+                    </div>
+
+                    <ul class="task-grid" id="taskList">
+                        <!-- Tasks mapped here -->
+                    </ul>
+                </div>
+                </div> <!-- End dashboardContent -->
+            </div>
+
+            <!-- Floating Action Button -->
+            <button class="fab" id="fabAddBtn" aria-label="Add new task">
+                <i class="fas fa-plus"></i>
+            </button>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add/Edit Task Modal -->
+    <div id="taskModal" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h3 id="taskModalTitle">Create New Task</h3>
+                <button class="close-btn modal-close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="taskInput">Task Description</label>
+                    <input type="text" id="taskInput" class="form-input" placeholder="What needs to be done?"
+                        autocomplete="off">
+                </div>
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label for="dueDateInput">Due Date</label>
+                        <input type="date" id="dueDateInput" class="form-input">
+                    </div>
+                    <div class="form-group flex-1">
+                        <label for="priorityInput">Priority</label>
+                        <select id="priorityInput" class="form-input">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn modal-close">Cancel</button>
+                <button id="saveTaskBtn" class="primary-btn">Save Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal-content glass-panel settings-panel">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="close-btn settings-close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h4>Appearance</h4>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span>Dark Mode</span>
+                            <small>Toggle dark/light theme</small>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="settingsThemeToggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h4>Notifications</h4>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span>Push Notifications</span>
+                            <small>Get notified about due tasks</small>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="notifyToggle" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h4>Account Profile</h4>
+                    <div class="profile-info">
+                        <div class="avatar lg"><span id="settingsInitial">U</span></div>
+                        <div class="profile-details">
+                            <strong id="profileEmail">demo@example.com</strong>
+                            <span class="badge">Pro Plan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal-content glass-panel mini">
+            <h3>Delete Task</h3>
+            <p>Are you sure you want to delete this task? This action cannot be undone.</p>
+            <div class="modal-actions mt-4">
+                <button id="cancelDeleteBtn" class="secondary-btn">Cancel</button>
+                <button id="confirmDeleteBtn" class="danger-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
+<div id="deleteModal" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal-content glass-panel mini">
+        <h3>Delete Task</h3>
+        <p>Are you sure you want to delete this task? This action cannot be undone.</p>
+        <div class="modal-actions mt-4">
+            <button id="cancelDeleteBtn" class="secondary-btn">Cancel</button>
+            <button id="confirmDeleteBtn" class="danger-btn">Delete</button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+
+</html>
