@@ -13,9 +13,17 @@ class TaskStore {
         this.userEmail = sessionStorage.getItem('userEmail') || 'default';
         this.tasksKey = `tasks_${this.userEmail}`;
         this.activitiesKey = `activities_${this.userEmail}`;
+        this.onboardedKey = `onboarded_${this.userEmail}`;
         
         this.tasks = JSON.parse(localStorage.getItem(this.tasksKey)) || [];
         this.activities = JSON.parse(localStorage.getItem(this.activitiesKey)) || [];
+        this.hasOnboarded = localStorage.getItem(this.onboardedKey) === 'true';
+        
+        if (this.tasks.length > 0 && !this.hasOnboarded) {
+            this.hasOnboarded = true;
+            localStorage.setItem(this.onboardedKey, 'true');
+        }
+
         this.currentFilter = 'all';
         this.currentSort = 'default';
     }
@@ -49,6 +57,11 @@ class TaskStore {
         this.tasks.push(newTask);
         this.save();
         this.logActivity('add', text);
+        
+        if (!this.hasOnboarded) {
+            this.hasOnboarded = true;
+            localStorage.setItem(this.onboardedKey, 'true');
+        }
     }
 
     toggleTask(id) {
@@ -235,18 +248,34 @@ class UI {
         }
     }
 
-    showDeleteModal(onConfirm) {
-        this.deleteModal.classList.remove('hidden');
-        this.deleteModal.setAttribute('aria-hidden', 'false');
-        
+    showConfirmModal(onConfirm, options = {}) {
+        const title = options.title || 'Confirm Action';
+        const message = options.message || 'Are you sure you want to continue?';
+        const confirmLabel = options.confirmLabel || 'Confirm';
+        const cancelLabel = options.cancelLabel || 'Cancel';
+        const confirmClass = options.confirmClass || 'danger-btn';
+
+        const titleEl = this.deleteModal.querySelector('h3');
+        const bodyEl = this.deleteModal.querySelector('p');
         const confirmBtn = document.getElementById('confirmDeleteBtn');
         const cancelBtn = document.getElementById('cancelDeleteBtn');
-        
+
+        if (titleEl) titleEl.textContent = title;
+        if (bodyEl) bodyEl.textContent = message;
+        if (confirmBtn) {
+            confirmBtn.textContent = confirmLabel;
+            confirmBtn.className = confirmClass;
+        }
+        if (cancelBtn) cancelBtn.textContent = cancelLabel;
+
+        this.deleteModal.classList.remove('hidden');
+        this.deleteModal.setAttribute('aria-hidden', 'false');
+
         const newConfirm = confirmBtn.cloneNode(true);
         const newCancel = cancelBtn.cloneNode(true);
         confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
         cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
-        
+
         const closeModal = () => {
             this.deleteModal.classList.add('hidden');
             this.deleteModal.setAttribute('aria-hidden', 'true');
@@ -256,6 +285,16 @@ class UI {
         newConfirm.addEventListener('click', () => {
             onConfirm();
             closeModal();
+        });
+    }
+
+    showDeleteModal(onConfirm) {
+        this.showConfirmModal(onConfirm, {
+            title: 'Delete Task',
+            message: 'Are you sure you want to delete this task? This action cannot be undone.',
+            confirmLabel: 'Delete',
+            cancelLabel: 'Cancel',
+            confirmClass: 'danger-btn'
         });
     }
 
@@ -288,8 +327,8 @@ class App {
         this.bindEvents();
         this.initTheme();
         this.initUser();
-        
         this.refresh();
+        this.showWelcomePageIfNeeded();
         this.ui.hideLoader();
         
         // Start time interval for greeting
@@ -334,14 +373,23 @@ class App {
         this.dropdownName = document.getElementById('dropdownName');
         this.dropdownEmail = document.getElementById('dropdownEmail');
         
+        // Welcome Front Page
+        this.welcomePage = document.getElementById('welcomePage');
+        this.welcomeStartBtn = document.getElementById('welcomeStartBtn');
+        this.welcomeUserName = document.getElementById('welcomeUserName');
+        this.welcomeTotal = document.getElementById('welcomeTotal');
+        this.welcomePending = document.getElementById('welcomePending');
+        this.welcomeComplete = document.getElementById('welcomeComplete');
+
         // Task Form
         this.saveTaskBtn = document.getElementById('saveTaskBtn');
         this.taskInput = document.getElementById('taskInput');
         this.dueDateInput = document.getElementById('dueDateInput');
         this.priorityInput = document.getElementById('priorityInput');
 
-        // Onboarding
+        // Onboarding & Content
         this.dashboardContent = document.getElementById('dashboardContent');
+        this.overviewSection = document.getElementById('overviewSection');
         this.onboardingState = document.getElementById('onboardingState');
         this.onboardingAddBtn = document.getElementById('onboardingAddBtn');
     }
@@ -433,14 +481,20 @@ class App {
 
     refresh() {
         // Handle onboarding view
-        if (this.store.tasks.length === 0 && this.store.currentFilter === 'all') {
+        if (this.store.tasks.length === 0 && this.store.currentFilter === 'all' && !this.store.hasOnboarded) {
             if (this.dashboardContent) this.dashboardContent.classList.add('hidden');
             if (this.onboardingState) this.onboardingState.classList.remove('hidden');
             if (this.fabAddBtn) this.fabAddBtn.style.display = 'none';
+            if (this.onboardingAddBtn) this.onboardingAddBtn.style.display = 'inline-flex';
         } else {
             if (this.dashboardContent) this.dashboardContent.classList.remove('hidden');
             if (this.onboardingState) this.onboardingState.classList.add('hidden');
             if (this.fabAddBtn) this.fabAddBtn.style.display = 'grid';
+            if (this.onboardingAddBtn) this.onboardingAddBtn.style.display = 'none';
+            
+            if (this.overviewSection) {
+                this.overviewSection.style.display = this.store.currentFilter === 'all' ? 'block' : 'none';
+            }
             
             const tasks = this.store.getFilteredAndSortedTasks();
             this.ui.renderTasks(tasks);
@@ -469,6 +523,44 @@ class App {
         if (activeNav && this.pageTitle) {
             this.pageTitle.textContent = activeNav.textContent.trim();
         }
+    }
+
+    showWelcomePageIfNeeded() {
+        if (!this.welcomePage) return;
+        const shouldShow = sessionStorage.getItem('showFrontPage') === 'true';
+        if (!shouldShow) {
+            this.welcomePage.classList.add('hidden');
+            return;
+        }
+
+        const name = sessionStorage.getItem('userName') || 'there';
+        const mode = sessionStorage.getItem('welcomeMode') || 'login';
+        const total = this.store.tasks.length;
+        const pending = this.store.getPendingCount();
+        const completed = total - pending;
+
+        const greetingPrefix = mode === 'signup' ? 'Welcome' : 'Welcome back';
+        const subtitleText = mode === 'signup'
+            ? "Great to have you onboard. Let's get started."
+            : "Nice to see you again. Here's your dashboard.";
+
+        const headingEl = this.welcomePage.querySelector('h2');
+        const subtitleEl = this.welcomePage.querySelector('.welcome-header p');
+
+        if (headingEl) {
+            headingEl.innerHTML = `${greetingPrefix}, <span id="welcomeUserName">${this.ui.escapeHTML(name.split(' ')[0] || name)}</span>!`;
+            this.welcomeUserName = document.getElementById('welcomeUserName');
+        }
+        if (subtitleEl) subtitleEl.textContent = subtitleText;
+        if (this.welcomeTotal) this.welcomeTotal.textContent = total;
+        if (this.welcomePending) this.welcomePending.textContent = pending;
+        if (this.welcomeComplete) this.welcomeComplete.textContent = completed;
+        this.welcomePage.classList.remove('hidden');
+    }
+
+    hideWelcomePage() {
+        if (this.welcomePage) this.welcomePage.classList.add('hidden');
+        sessionStorage.removeItem('showFrontPage');
     }
 
     renderActivityFeed() {
@@ -596,9 +688,17 @@ class App {
         if (this.logoutBtn) {
             this.logoutBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                sessionStorage.removeItem('authenticated');
-                sessionStorage.removeItem('userEmail');
-                window.location.href = 'login.html';
+                this.ui.showConfirmModal(() => {
+                    sessionStorage.removeItem('authenticated');
+                    sessionStorage.removeItem('userEmail');
+                    window.location.href = 'login.html';
+                }, {
+                    title: 'Log Out',
+                    message: 'Are you sure you want to log out? You will need to sign in again to access your tasks.',
+                    confirmLabel: 'Log Out',
+                    cancelLabel: 'Cancel',
+                    confirmClass: 'danger-btn'
+                });
             });
         }
 
@@ -612,14 +712,22 @@ class App {
 
         // Profile Dropdown logic
         if (this.profileDropdownBtn && this.profileDropdown) {
+            const updateProfileAria = (isOpen) => {
+                this.profileDropdownBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            };
+
+            updateProfileAria(false);
+
             this.profileDropdownBtn.addEventListener('click', (e) => {
-                this.profileDropdown.classList.toggle('hidden');
+                const isOpen = !this.profileDropdown.classList.toggle('hidden');
+                updateProfileAria(isOpen);
                 e.stopPropagation();
             });
 
             document.addEventListener('click', (e) => {
                 if (!this.profileDropdownBtn.contains(e.target)) {
                     this.profileDropdown.classList.add('hidden');
+                    updateProfileAria(false);
                 }
             });
 
@@ -627,6 +735,7 @@ class App {
                 this.dropdownSettingsBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     this.profileDropdown.classList.add('hidden');
+                    updateProfileAria(false);
                     this.ui.openModal('settingsModal');
                 });
             }
@@ -634,9 +743,19 @@ class App {
             if (this.dropdownLogoutBtn) {
                 this.dropdownLogoutBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    sessionStorage.removeItem('authenticated');
-                    sessionStorage.removeItem('userEmail');
-                    window.location.href = 'login.html';
+                    this.profileDropdown.classList.add('hidden');
+                    updateProfileAria(false);
+                    this.ui.showConfirmModal(() => {
+                        sessionStorage.removeItem('authenticated');
+                        sessionStorage.removeItem('userEmail');
+                        window.location.href = 'login.html';
+                    }, {
+                        title: 'Log Out',
+                        message: 'Are you sure you want to log out? You will need to sign in again to access your tasks.',
+                        confirmLabel: 'Log Out',
+                        cancelLabel: 'Cancel',
+                        confirmClass: 'danger-btn'
+                    });
                 });
             }
         }
@@ -664,7 +783,7 @@ class App {
                 if (btn.dataset.filter) {
                     btn.addEventListener('click', (e) => {
                         e.preventDefault();
-                        document.querySelector('.nav-item.active')?.classList.remove('active');
+                        document.querySelector('.sidebar-nav .nav-item.active')?.classList.remove('active');
                         btn.classList.add('active');
                         this.store.setFilter(btn.dataset.filter);
                         this.refresh();
@@ -723,6 +842,12 @@ class App {
                 if (e.target.checked !== document.body.classList.contains('dark-theme')) {
                     this.toggleTheme();
                 }
+            });
+        }
+
+        if (this.welcomeStartBtn) {
+            this.welcomeStartBtn.addEventListener('click', () => {
+                this.hideWelcomePage();
             });
         }
     }
