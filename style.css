@@ -15,10 +15,10 @@
     --border-color: #e5e7eb;
     --border-light: #f3f4f6;
 
-    --accent-color: #6366f1;
-    /* Indigo */
-    --accent-hover: #4f46e5;
-    --accent-light: #e0e7ff;
+    --accent-color: #f59e0b;
+    /* Yellow */
+    --accent-hover: #d97706;
+    --accent-light: #fef3c7;
 
     /* Status Colors */
     --danger: #ef4444;
@@ -100,6 +100,10 @@ a {
 
 button {
     font-family: inherit;
+}
+
+.hidden {
+    display: none !important;
 }
 
 ul {
@@ -337,7 +341,7 @@ ul {
 .avatar {
     width: 32px;
     height: 32px;
-    background: linear-gradient(135deg, var(--accent-color), #818cf8);
+    background: linear-gradient(135deg, var(--accent-color), #fde68a);
     color: white;
     border-radius: var(--radius-full);
     display: grid;
@@ -371,6 +375,91 @@ ul {
 @keyframes dropdownFadeIn {
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
+}
+
+.welcome-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.65);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    z-index: 100;
+}
+
+.welcome-card {
+    width: min(100%, 520px);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    padding: 2rem;
+    animation: popIn 0.25s ease;
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: translateY(16px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.welcome-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+}
+
+.welcome-badge {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(129, 140, 248, 0.2));
+    display: grid;
+    place-items: center;
+    color: var(--accent-color);
+    font-size: 1.35rem;
+}
+
+.welcome-header h2 {
+    font-size: 1.75rem;
+    margin-bottom: 0.3rem;
+}
+
+.welcome-header p {
+    color: var(--text-secondary);
+}
+
+.welcome-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.welcome-stats div {
+    background: var(--bg-base);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    text-align: center;
+}
+
+.welcome-stats span {
+    display: block;
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.welcome-stats p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.welcome-copy {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
 }
 
 .dropdown-header {
@@ -483,8 +572,8 @@ ul {
 }
 
 .bg-blue {
-    background-color: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
+    background-color: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
 }
 
 .bg-orange {
@@ -593,7 +682,15 @@ ul {
 }
 
 .danger-btn {
+    background: var(--bg-hover);
     color: var(--danger);
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition);
 }
 
 .danger-btn:hover {
@@ -1203,4 +1300,44 @@ input:checked+.slider:before {
     .form-row {
         flex-direction: column;
     }
+}
+
+/* FocusFlow Logo Branding */
+.focusflow-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-accent {
+    background: linear-gradient(135deg, var(--accent-color), #fde68a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent; /* Fallback */
+    filter: drop-shadow(0 2px 4px rgba(99, 102, 241, 0.3));
+}
+
+.logo-text {
+    font-weight: 500;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+}
+
+.logo-bold {
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.auth-logo-container {
+    justify-content: center;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+.auth-logo-container .logo-text {
+    font-size: 2.5rem;
+}
+.auth-logo-container .auth-logo {
+    margin-bottom: 0;
 }
