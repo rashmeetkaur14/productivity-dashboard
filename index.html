@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - WToDo</title>
+    <title>Dashboard - FocusFlow</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -21,10 +21,10 @@
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="brand">
-                    <i class="fas fa-layer-group brand-icon"></i>
-                    <span>WToDo</span>
-                </div>
+                <a href="index.html" class="brand focusflow-logo">
+                    <i class="fas fa-cube brand-icon logo-accent"></i>
+                    <span class="logo-text">Focus<span class="logo-bold">Flow</span></span>
+                </a>
                 <button class="mobile-close" id="mobileCloseBtn">
                     <i class="fas fa-times"></i>
                 </button>
@@ -72,7 +72,7 @@
                     <button id="headerThemeToggle" class="icon-btn" aria-label="Toggle Theme">
                         <i class="fas fa-moon"></i>
                     </button>
-                    <div class="user-profile" id="profileDropdownBtn" style="cursor: pointer; position: relative;">
+                    <div class="user-profile" id="profileDropdownBtn" role="button" aria-haspopup="menu" aria-expanded="false" style="cursor: pointer; position: relative;">
                         <div class="avatar">
                             <span id="userInitial">U</span>
                         </div>
@@ -94,6 +94,34 @@
                     </div>
                 </div>
             </header>
+
+            <div id="welcomePage" class="welcome-overlay hidden">
+                <div class="welcome-card">
+                    <div class="welcome-header">
+                        <div class="welcome-badge"><i class="fas fa-hand-sparkles"></i></div>
+                        <div>
+                            <h2>Welcome back, <span id="welcomeUserName">User</span>!</h2>
+                            <p>Here's your FocusFlow dashboard. Let’s get productive.</p>
+                        </div>
+                    </div>
+                    <div class="welcome-stats">
+                        <div>
+                            <span id="welcomeTotal">0</span>
+                            <p>Total tasks</p>
+                        </div>
+                        <div>
+                            <span id="welcomePending">0</span>
+                            <p>Pending</p>
+                        </div>
+                        <div>
+                            <span id="welcomeComplete">0</span>
+                            <p>Completed</p>
+                        </div>
+                    </div>
+                    <p class="welcome-copy">You can manage tasks, set priorities, and track progress from your dashboard. Ready to dive in?</p>
+                    <button id="welcomeStartBtn" class="primary-btn">Go to dashboard</button>
+                </div>
+            </div>
 
             <div class="content-scrollable">
                 <!-- ONBOARDING STATE -->
@@ -312,21 +340,6 @@
     </div>
 
     <script src="script.js"></script>
-</body>
-
-</html>
-<div id="deleteModal" class="modal-overlay hidden" aria-hidden="true">
-    <div class="modal-content glass-panel mini">
-        <h3>Delete Task</h3>
-        <p>Are you sure you want to delete this task? This action cannot be undone.</p>
-        <div class="modal-actions mt-4">
-            <button id="cancelDeleteBtn" class="secondary-btn">Cancel</button>
-            <button id="confirmDeleteBtn" class="danger-btn">Delete</button>
-        </div>
-    </div>
-</div>
-
-<script src="script.js"></script>
 </body>
 
 </html>
